@@ -19,7 +19,9 @@ Initialized empty Git repository in /tmp/test/.git/
 #
 ```
 使用plumbing command `hash-object`來根據file內容產生object，`-w`代表將object寫入database，
-執行完後可以發現`.git/object/`底下已經儲存了資料，可以透過`cat-file`來查看object，`-p`代表顯示object內容
+執行完後可以發現`.git/object/`底下已經儲存了資料，可以透過`cat-file`來查看object，
+* `-p`代表顯示object內容
+* `-t`顯示object的type
 ```console
 # echo 'test content' | git hash-object -w --stdin
 d670460b4b4aece5915caf5c68d12f560a9fe3e4
@@ -27,6 +29,8 @@ d670460b4b4aece5915caf5c68d12f560a9fe3e4
 .git/objects/d6/70460b4b4aece5915caf5c68d12f560a9fe3e4
 # git cat-file -p d670
 test content
+# git cat-file -t d670
+blob
 ```
 因此只要透過`hash-object`的方式，就可以達到對內容版本的管理，下面展示做法
 ```console
@@ -44,20 +48,17 @@ test content
 .git/objects/1f/7a7a472abf3dd9643fd615f6da379c4acb3e3a
 .git/objects/83/baae61804e65cc73a7201a7252750c76066a30
 ```
-先回復到第一版，再回復到第二版
+回復到第一版
 ```console
 # git cat-file -p 83ba > test.txt
 # cat test.txt
 version 1
-# git cat-file -p 1f7a > test.txt
-# cat test.txt
-version 2
 ```
 
 ## Tree object
 使用plumbing command `update-index`將test.txt加入tree object之中
 ```console
-# git update-index --add --cacheinfo 100644 83baae61804e65cc73a7201a7252750c76066a30 test.txt
+# git update-index --add test.txt
 # git write-tree
 d8329fc1cc938780ffdd9f94e0d364e0ea74f579
 ```
